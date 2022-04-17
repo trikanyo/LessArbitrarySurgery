@@ -36,6 +36,7 @@ namespace LessArbitrarySurgery.Harmony
                 surgeon.mindState.inspirationHandler.EndInspiration(InspirationDefOf.Inspired_Surgery);
             }
 
+            var successChance = num;
             num = Mathf.Min(num, 0.98f);
             if (!Rand.Chance(num)) // Failed check
             {
@@ -62,7 +63,9 @@ namespace LessArbitrarySurgery.Harmony
                 {
                     // Failed check
                     //The surgeon has a chance based on their skill to avoid potentially lethal failures.
-                    if (!Rand.Chance(__instance.recipe.deathOnFailedSurgeryChance - num))
+                    //Prevents lethal surgery scenario if recipe normally has a 0% chance of death in vanilla
+                    if (!Rand.Chance(successChance - __instance.recipe.deathOnFailedSurgeryChance) &&
+                        __instance.recipe.deathOnFailedSurgeryChance > 0)
                     {
                         //Failed surgery death chance is influenced by the surgery success chance.
                         HealthUtility.GiveInjuriesOperationFailureCatastrophic(patient, part);
